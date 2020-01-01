@@ -1,0 +1,12 @@
+import React from 'react'
+import { View } from 'react-native'
+
+// import { Container } from './styles';
+
+export default function CheckIn() {
+  return <View />
+}
+
+CheckIn.navigationOptions = {
+  tabBarLabel: 'Check-ins',
+}
