@@ -14,20 +14,27 @@ export default function questions(state = INITIAL_STATE, action) {
         break
       }
       case '@questions/LIST_SUCCESS': {
-        draft.index = action.payload.questions
+        draft.index = [...draft.index, ...action.payload.questions]
         draft.loading = false
+        draft.page += 1
         break
       }
       case '@questions/LIST_FAILURE': {
         draft.loading = false
         break
       }
-      case '@questions/UPDATE_SUCCESS': {
-        const listQuestions = state.index.filter(
-          question => Number(question.id) !== Number(action.payload.question.id)
-        )
-
-        draft.index = listQuestions
+      case '@questions/REFRESH_REQUEST': {
+        draft.loading = true
+        break
+      }
+      case '@questions/REFRESH_SUCCESS': {
+        draft.index = action.payload.questions
+        draft.loading = false
+        draft.page += 1
+        break
+      }
+      case '@questions/CREATE_SUCCESS': {
+        draft.index.unshift(action.payload.question)
         break
       }
       default:

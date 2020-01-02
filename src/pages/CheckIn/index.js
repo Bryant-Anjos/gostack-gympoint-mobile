@@ -56,6 +56,7 @@ CheckIn.navigationOptions = {
 CheckIn.propTypes = {
   checkins: PropTypes.arrayOf(PropTypes.object).isRequired,
   loading: PropTypes.bool.isRequired,
+  page: PropTypes.number.isRequired,
 }
 
 const mapStateToProps = state => ({

@@ -1,6 +1,7 @@
-export function listRequest() {
+export function listRequest(page) {
   return {
     type: '@questions/LIST_REQUEST',
+    payload: { page },
   }
 }
 
@@ -17,22 +18,36 @@ export function listFailure() {
   }
 }
 
-export function updateRequest(id, answer) {
+export function refreshRequest(page) {
   return {
-    type: '@questions/UPDATE_REQUEST',
-    payload: { id, answer },
+    type: '@questions/REFRESH_REQUEST',
+    payload: { page },
   }
 }
 
-export function updateSuccess(question) {
+export function refreshSuccess(questions) {
   return {
-    type: '@questions/UPDATE_SUCCESS',
+    type: '@questions/REFRESH_SUCCESS',
+    payload: { questions },
+  }
+}
+
+export function createRequest(question) {
+  return {
+    type: '@questions/CREATE_REQUEST',
     payload: { question },
   }
 }
 
-export function updateFailure() {
+export function createSuccess(question) {
   return {
-    type: '@questions/UPDATE_FAILURE',
+    type: '@questions/CREATE_SUCCESS',
+    payload: { question },
+  }
+}
+
+export function createFailure() {
+  return {
+    type: '@questions/CREATE_FAILURE',
   }
 }

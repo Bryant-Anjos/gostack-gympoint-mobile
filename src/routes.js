@@ -1,10 +1,14 @@
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createBottomTabNavigator } from 'react-navigation-tabs'
+import { createStackNavigator } from 'react-navigation-stack'
 
 import SignIn from './pages/SignIn'
 
 import CheckIn from './pages/CheckIn'
+
 import HelpOrders from './pages/HelpOrders'
+import HelpOrdersCreate from './pages/HelpOrders/Create'
+import HelpOrdersShow from './pages/HelpOrders/Show'
 
 export default (signedIn = false) =>
   createAppContainer(
@@ -16,7 +20,21 @@ export default (signedIn = false) =>
         App: createBottomTabNavigator(
           {
             CheckIn,
-            HelpOrders,
+            HelpOrders: {
+              screen: createStackNavigator(
+                {
+                  HelpOrders,
+                  HelpOrdersCreate,
+                  HelpOrdersShow,
+                },
+                {
+                  headerMode: 'none',
+                }
+              ),
+              navigationOptions: {
+                tabBarLabel: 'Pedir ajuda',
+              },
+            },
           },
           {
             tabBarOptions: {

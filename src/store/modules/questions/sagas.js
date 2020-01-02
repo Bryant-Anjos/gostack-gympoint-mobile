@@ -8,49 +8,73 @@ import api from '~/services/api'
 import {
   listSuccess,
   listFailure,
-  updateSuccess,
-  updateFailure,
+  refreshSuccess,
+  createSuccess,
+  createFailure,
 } from './actions'
 
-export function* list() {
+export function* list({ type, payload }) {
   try {
-    const response = yield call(api.get, 'help-orders')
+    const { page = 1 } = payload
+
+    const response = yield call([api, 'get'], 'questions', { params: { page } })
 
     const questions = response.data.map(question => ({
-      ...question,
-      created_at_formated: formatRelative(
-        parseISO(question.created_at),
-        new Date(),
-        {
-          locale: pt,
-          addSuffix: true,
-        }
-      ),
+      id: question.id.toString(),
+      question: question.question,
+      answer: question.answer,
+      answered: !!question.answer_at,
+      time: formatRelative(parseISO(question.createdAt), new Date(), {
+        locale: pt,
+      }),
     }))
 
-    yield put(listSuccess(questions))
+    switch (type) {
+      case '@questions/LIST_REQUEST':
+        yield put(listSuccess(questions))
+        break
+      case '@questions/REFRESH_REQUEST':
+        yield put(refreshSuccess(questions))
+        break
+      default:
+        break
+    }
   } catch (err) {
-    Alert.alert('Erro', 'Falha ao listar perguntas, tente novamente mais tarde')
+    Alert.alert(
+      'Erro',
+      'Erro ao listar as perguntas, tente novamente mais tarde'
+    )
     yield put(listFailure())
   }
 }
 
-export function* update({ payload }) {
+export function* create({ payload }) {
   try {
-    const { id } = payload
+    const response = yield call(api.post, 'questions', payload)
 
-    const response = yield call(api.put, `help-orders/${id}/answer`, payload)
+    const question = {
+      id: response.data.id.toString(),
+      question: response.data.question,
+      answer: response.data.answer,
+      answered: !!response.data.answer_at,
+      time: formatRelative(parseISO(response.data.createdAt), new Date(), {
+        locale: pt,
+      }),
+    }
 
-    Alert.alert('Sucesso!', 'Pergunta respondida com sucesso!')
-    yield put(updateSuccess(response.data))
-    // history.push('/questions')
+    yield put(createSuccess(question))
+    Alert.alert('Sucesso!', 'Sua pergunta foi realizada com sucesso')
   } catch (err) {
-    Alert.alert('Erro', 'Falha ao responder pergunta')
-    yield put(updateFailure())
+    Alert.alert(
+      'Erro',
+      'Não foi possível enviar a sua pergunta. Tente novamente mais tarde'
+    )
+    yield put(createFailure())
   }
 }
 
 export default all([
   takeLatest('@questions/LIST_REQUEST', list),
-  takeLatest('@questions/UPDATE_REQUEST', update),
+  takeLatest('@questions/REFRESH_REQUEST', list),
+  takeLatest('@questions/CREATE_REQUEST', create),
 ])
