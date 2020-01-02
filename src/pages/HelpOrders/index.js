@@ -74,7 +74,7 @@ HelpOrders.propTypes = {
   questions: PropTypes.arrayOf(PropTypes.object).isRequired,
   loading: PropTypes.bool.isRequired,
   page: PropTypes.number.isRequired,
-  navigation: PropTypes.objectOf([PropTypes.func]).isRequired,
+  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 }
 
 const mapStateToProps = state => ({

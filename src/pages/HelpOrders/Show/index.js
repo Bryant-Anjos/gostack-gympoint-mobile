@@ -27,5 +27,5 @@ export default function Show({ navigation }) {
 }
 
 Show.propTypes = {
-  navigation: PropTypes.objectOf([PropTypes.object]).isRequired,
+  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 }
