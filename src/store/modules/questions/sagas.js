@@ -13,7 +13,7 @@ import {
   createFailure,
 } from './actions'
 
-export function* list({ type, payload }) {
+export function* list({ payload }) {
   try {
     const { page = 1 } = payload
 
@@ -29,16 +29,31 @@ export function* list({ type, payload }) {
       }),
     }))
 
-    switch (type) {
-      case '@questions/LIST_REQUEST':
-        yield put(listSuccess(questions))
-        break
-      case '@questions/REFRESH_REQUEST':
-        yield put(refreshSuccess(questions))
-        break
-      default:
-        break
-    }
+    yield put(listSuccess(questions))
+  } catch (err) {
+    Alert.alert(
+      'Erro',
+      'Erro ao listar as perguntas, tente novamente mais tarde'
+    )
+    yield put(listFailure())
+  }
+}
+
+export function* refresh() {
+  try {
+    const response = yield call([api, 'get'], 'questions')
+
+    const questions = response.data.map(question => ({
+      id: question.id.toString(),
+      question: question.question,
+      answer: question.answer,
+      answered: !!question.answer_at,
+      time: formatRelative(parseISO(question.createdAt), new Date(), {
+        locale: pt,
+      }),
+    }))
+
+    yield put(refreshSuccess(questions))
   } catch (err) {
     Alert.alert(
       'Erro',
@@ -75,6 +90,6 @@ export function* create({ payload }) {
 
 export default all([
   takeLatest('@questions/LIST_REQUEST', list),
-  takeLatest('@questions/REFRESH_REQUEST', list),
+  takeLatest('@questions/REFRESH_REQUEST', refresh),
   takeLatest('@questions/CREATE_REQUEST', create),
 ])

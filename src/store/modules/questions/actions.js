@@ -18,10 +18,9 @@ export function listFailure() {
   }
 }
 
-export function refreshRequest(page) {
+export function refreshRequest() {
   return {
     type: '@questions/REFRESH_REQUEST',
-    payload: { page },
   }
 }
 
@@ -49,5 +48,12 @@ export function createSuccess(question) {
 export function createFailure() {
   return {
     type: '@questions/CREATE_FAILURE',
+  }
+}
+
+export function updateQuestion(question) {
+  return {
+    type: '@questions/UPDATE_QUESTION',
+    payload: { question },
   }
 }

@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { ActivityIndicator } from 'react-native'
-import { connect, useDispatch } from 'react-redux'
+import { connect, useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
+import socketio from 'socket.io-client'
 
 import Button from '~/components/Button'
 
@@ -15,11 +16,31 @@ import {
   Footer,
 } from './styles'
 
-import { listRequest, refreshRequest } from '~/store/modules/questions/actions'
+import {
+  listRequest,
+  refreshRequest,
+  updateQuestion,
+} from '~/store/modules/questions/actions'
 
 function HelpOrders({ questions, loading, page, navigation }) {
   const dispatch = useDispatch()
   const { navigate } = navigation
+
+  const user = useSelector(state => state.user.profile)
+
+  const socket = useMemo(
+    () =>
+      socketio('http://192.168.0.107:3333', {
+        query: {
+          student_id: user.id,
+        },
+      }),
+    [user.id]
+  )
+
+  useEffect(() => {
+    socket.on('question', question => dispatch(updateQuestion(question)))
+  }, [dispatch, socket])
 
   useEffect(() => {
     if (questions.length === 0) dispatch(listRequest())
@@ -63,7 +84,7 @@ function HelpOrders({ questions, loading, page, navigation }) {
         onEndReached={() => dispatch(listRequest(page))}
         onEndReachedThreshold={0.1}
         ListFooterComponent={renderFooter}
-        onRefresh={() => dispatch(refreshRequest(page))}
+        onRefresh={() => dispatch(refreshRequest())}
         refreshing={loading}
       />
     </Container>
